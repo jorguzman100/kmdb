@@ -24,3 +24,14 @@
 hs_err_pid*
 replay_pid*
 
+# Other
+/build/
+/.idea/
+/.vscode/
+.DS_Store
+sequence.puml
+info.sh
+info.txt
+
+# Output examples
+/data/output/*.txt
