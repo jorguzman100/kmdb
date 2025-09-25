@@ -3,6 +3,8 @@ package tech.kood.kmdb.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -16,6 +18,7 @@ public class Genre {
     // Relationships - inverse side
     
     @ManyToMany(mappedBy = "genres")
+    @JsonIgnoreProperties({ "genres", "actors" })
     private Set<Movie> movies = new HashSet<>();
 
     public Genre() {}

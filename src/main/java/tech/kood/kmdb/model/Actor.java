@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -18,6 +20,7 @@ public class Actor {
     // Relationships - inverse side
 
     @ManyToMany(mappedBy = "actors")
+    @JsonIgnoreProperties({ "actors", "genres" })
     Set<Movie> movies = new HashSet<>();
 
     public Actor() {}

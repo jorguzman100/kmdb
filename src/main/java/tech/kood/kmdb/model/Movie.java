@@ -3,9 +3,13 @@ package tech.kood.kmdb.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 
 @Entity
@@ -19,10 +23,22 @@ public class Movie {
 
     // Movie-Genre
     @ManyToMany
+    @JoinTable(
+        name = "movie-genres",
+        joinColumns = @JoinColumn(name = "movie_id"),
+        inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    @JsonIgnoreProperties("movies")
     private Set<Genre> genres = new HashSet<>();
 
     // Movie-Actor
     @ManyToMany
+    @JoinTable(
+        name = "movie-actors",
+        joinColumns = @JoinColumn(name = "movie_id"),
+        inverseJoinColumns = @JoinColumn(name = "actor_id")
+    )
+    @JsonIgnoreProperties("movies")
     private Set<Actor> actors = new HashSet<>();
 
     public Movie() {}
