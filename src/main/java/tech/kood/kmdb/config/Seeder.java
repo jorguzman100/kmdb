@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import tech.kood.kmdb.model.Actor;
 import tech.kood.kmdb.model.Genre;
@@ -17,6 +18,7 @@ import tech.kood.kmdb.repository.GenreRepository;
 import tech.kood.kmdb.repository.MovieRepository;
 
 @Configuration
+@Order(1)
 public class Seeder {
 
     @Bean
