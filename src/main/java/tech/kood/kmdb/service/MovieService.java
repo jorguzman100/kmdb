@@ -3,6 +3,8 @@ package tech.kood.kmdb.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +21,42 @@ public class MovieService {
         this.movieRepository = movieRepository;
     }
 
-    // CRUD
+    // WRITE
 
     @Transactional
     public Movie create(Movie movie) {
         return movieRepository.save(movie);
     }
+
+    @Transactional
+    public void delete(Long id) {
+        movieRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Optional<Movie> update(Long id, Movie updatemovie) {
+        return movieRepository.findById(id)
+        .map(movie -> {
+            if (updatemovie.getTitle() != null && !updatemovie.getTitle().isBlank()) {
+                movie.setTitle(updatemovie.getTitle());
+            }
+            if (updatemovie.getReleaseYear() != 0) {
+                movie.setReleaseYear(updatemovie.getReleaseYear());
+            }
+            if (updatemovie.getDuration() != 0) {
+                movie.setDuration(updatemovie.getDuration());
+            }
+            if (updatemovie.getGenres() != null) {
+                movie.setGenres(updatemovie.getGenres());
+            }
+            if (updatemovie.getActors() != null) {
+                movie.setActors(updatemovie.getActors());
+            }
+            return movieRepository.save(movie);
+        });
+    }
+
+    // READ
 
     @Transactional(readOnly = true)
     public List<Movie> findAll() {
@@ -34,11 +66,6 @@ public class MovieService {
     @Transactional(readOnly = true)
     public Optional<Movie> findbyId(Long id) { 
         return movieRepository.findById(id);
-    }
-
-    @Transactional
-    public void delete(Long id) {
-        movieRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
@@ -63,26 +90,30 @@ public class MovieService {
                 .orElse(List.of()); 
     }
 
-    @Transactional
-    public Optional<Movie> update(Long id, Movie updatemovie) {
-        return movieRepository.findById(id)
-        .map(movie -> {
-            if (updatemovie.getTitle() != null && !updatemovie.getTitle().isBlank()) {
-                movie.setTitle(updatemovie.getTitle());
-            }
-            if (updatemovie.getReleaseYear() != 0) {
-                movie.setReleaseYear(updatemovie.getReleaseYear());
-            }
-            if (updatemovie.getDuration() != 0) {
-                movie.setDuration(updatemovie.getDuration());
-            }
-            if (updatemovie.getGenres() != null) {
-                movie.setGenres(updatemovie.getGenres());
-            }
-            if (updatemovie.getActors() != null) {
-                movie.setActors(updatemovie.getActors());
-            }
-            return movieRepository.save(movie);
-        });
+    // READ - PAGED
+
+    @Transactional(readOnly = true)
+    public Page<Movie> findAll(Pageable pageable) {
+        return movieRepository.findAll(pageable); // JpaRepository already provides findAll(Pageable) -> No need to declare in repo
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Movie> findByGenre(Long genreId, Pageable pageable) {
+        return movieRepository.findByGenres_Id(genreId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Movie> findByYear(int releaseYear, Pageable pageable) {
+        return movieRepository.findByReleaseYear(releaseYear, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Movie> findByActor(Long actorId, Pageable pageable) {
+        return movieRepository.findByActors_Id(actorId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Movie> searchByTitle(String title, Pageable pageable) {
+        return movieRepository.findByTitleContainingIgnoreCase(title, pageable);
     }
 }
