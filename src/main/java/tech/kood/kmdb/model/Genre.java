@@ -10,9 +10,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 
+import jakarta.validation.constraints.*;
+
 @Entity
 public class Genre {
     private @Id @GeneratedValue Long id;
+    
+    @NotBlank(message = "name must not be blank")
+    @Size(max = 100, message = "name must be at most 100 characters")
     private String name;
 
     // Relationships - inverse side

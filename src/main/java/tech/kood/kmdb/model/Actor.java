@@ -11,10 +11,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 
+import jakarta.validation.constraints.*;
+
 @Entity
 public class Actor {
     private @Id @GeneratedValue Long id;
+
+    @NotBlank(message = "name must not be blank")
+    @Size(max = 120, message = "name must be at most 120 characters")
     private String name;
+
+    @PastOrPresent(message = "birthDate must be in the past or today")
     private LocalDate birthDate;
 
     // Relationships - inverse side

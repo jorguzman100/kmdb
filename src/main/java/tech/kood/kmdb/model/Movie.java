@@ -12,11 +12,23 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 
+import jakarta.validation.constraints.*;
+
 @Entity
 public class Movie {
     private @Id @GeneratedValue Long id;
+
+    @NotBlank(message = "title must not be blank")
+    @Size(max = 200, message = "title must be at most 200 characters")
     private String title;
+    
+    @Min(value = 1888, message = "releaseYear must be >= 1888")
+    @Max(value = 2100, message = "releaseYear must be <= 2100")
     private int releaseYear;
+    
+    
+    @Min(value = 1, message = "duration must be >= 1")
+    @Max(value = 600, message = "duration must be <= 600")
     private int duration;
 
     // Relationships - Movie is the owner

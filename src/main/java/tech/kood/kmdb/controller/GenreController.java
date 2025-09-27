@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import tech.kood.kmdb.model.Genre;
 import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.service.GenreService;
@@ -24,7 +25,7 @@ public class GenreController {
     // CRUD
 
     @PostMapping // 201 + created entity
-    public ResponseEntity<Genre> create(@RequestBody Genre genre) {
+    public ResponseEntity<Genre> create(@Valid @RequestBody Genre genre) {
         Genre created = genreService.create(genre);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -41,7 +42,7 @@ public class GenreController {
     }
 
     @PatchMapping("/{id}") // 200 + updated entity
-    public ResponseEntity<Genre> updateName(@PathVariable Long id, @RequestBody UpdateName body) {
+    public ResponseEntity<Genre> updateName(@PathVariable Long id, @Valid @RequestBody UpdateName body) {
         if (body == null || body.name() == null || body.name().isBlank()) {
             return ResponseEntity.badRequest().build();
         }

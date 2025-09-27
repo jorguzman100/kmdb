@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tech.kood.kmdb.dto.MoviePatchDTO;
 import tech.kood.kmdb.model.Actor;
 import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.repository.MovieRepository;
@@ -51,6 +52,23 @@ public class MovieService {
             }
             if (updatemovie.getActors() != null) {
                 movie.setActors(updatemovie.getActors());
+            }
+            return movieRepository.save(movie);
+        });
+    }
+
+    @Transactional
+    public Optional<Movie> update(Long id, MoviePatchDTO patch) {
+        return movieRepository.findById(id)
+        .map(movie -> {
+            if (patch.getTitle() != null) {
+                movie.setTitle(patch.getTitle());
+            }
+            if (patch.getReleaseYear() != null) {
+                movie.setReleaseYear(patch.getReleaseYear());
+            }
+            if (patch.getDuration() != null) {
+                movie.setDuration(patch.getDuration());
             }
             return movieRepository.save(movie);
         });

@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
+import tech.kood.kmdb.dto.MoviePatchDTO;
 import tech.kood.kmdb.model.Actor;
 import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.service.MovieService;
@@ -34,7 +36,7 @@ public class MovieController {
     // CRUD
 
     @PostMapping // 201 + created entity
-    public ResponseEntity<Movie> create(@RequestBody Movie movie) {
+    public ResponseEntity<Movie> create(@Valid @RequestBody Movie movie) {
         Movie created = movieService.create(movie);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -46,7 +48,7 @@ public class MovieController {
     }
 
     @PatchMapping("/{id}") // 200 + updated entity
-    public ResponseEntity<Movie> patch(@PathVariable Long id, @RequestBody Movie partial) {
+    public ResponseEntity<Movie> patch(@PathVariable Long id, @Valid @RequestBody MoviePatchDTO partial) {
         return movieService.update(id, partial)
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());

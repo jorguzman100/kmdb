@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import tech.kood.kmdb.model.Actor;
 import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.service.ActorService;
@@ -32,7 +33,7 @@ public class ActorController {
     // CRUD
 
     @PostMapping // 201 + created entity
-    public ResponseEntity<Actor> create(@RequestBody Actor actor) {
+    public ResponseEntity<Actor> create(@Valid @RequestBody Actor actor) {
         Actor created = actorService.create(actor);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -52,7 +53,7 @@ public class ActorController {
     }
 
     @PatchMapping("/{id}") // 200 + updated entity
-    public ResponseEntity<Actor> patch(@PathVariable Long id, @RequestBody Actor partial) {
+    public ResponseEntity<Actor> patch(@PathVariable Long id, @Valid @RequestBody Actor partial) {
         return actorService.update(id, partial)
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
