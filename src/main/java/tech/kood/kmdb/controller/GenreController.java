@@ -42,6 +42,10 @@ public class GenreController {
 
     @PatchMapping("/{id}") // 200 + updated entity
     public ResponseEntity<Genre> updateName(@PathVariable Long id, @RequestBody UpdateName body) {
+        if (body == null || body.name() == null || body.name().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        
         return genreService.updateName(id, body.name())
         .map(ResponseEntity::ok)
         .orElseGet(() -> ResponseEntity.notFound().build());
