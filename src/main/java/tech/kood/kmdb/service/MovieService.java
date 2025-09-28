@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import tech.kood.kmdb.dto.MoviePatchDTO;
+import tech.kood.kmdb.exception.ResourceNotFoundException;
 import tech.kood.kmdb.model.Actor;
+import tech.kood.kmdb.model.Genre;
 import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.repository.MovieRepository;
 
@@ -32,6 +34,30 @@ public class MovieService {
     @Transactional
     public void delete(Long id) {
         movieRepository.deleteById(id);
+    }
+
+    // Force delete
+    @Transactional
+    public void delete(Long id, boolean force) {
+        Movie movie = movieRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Movie " + id + " not found"));
+
+        int related = movie.getGenres().size() + movie.getActors().size();
+        if (!force && related > 0) {
+            throw new IllegalArgumentException("Cannot delete movie '" + movie.getTitle() + "' because it has " + related + " associated genres/actors."); // 400 The GlobalException handler maps IllegalArgumentException
+        }
+
+        if (force) { // Detach from both sides and inerse sets
+            for (Genre g : List.copyOf(movie.getGenres())) {
+                movie.getGenres().remove(g); // Remove the link
+            }
+            for (Actor a : List.copyOf(movie.getActors())) {
+                movie.getActors().remove(a); // Remove the link
+            }
+            movieRepository.save(movie); // persist join table cleanning
+        }
+
+        movieRepository.delete(movie);
     }
 
     @Transactional

@@ -54,9 +54,10 @@ public class MovieController {
         .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}") // 204
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        movieService.delete(id);
+    @DeleteMapping("/{id}") // ?force= -> 204/400
+    public ResponseEntity<Void> delete(@PathVariable Long id,
+    @RequestParam(name = "force", defaultValue = "false") boolean force) {
+        movieService.delete(id, force);
         return ResponseEntity.noContent().build();
     }
 

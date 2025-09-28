@@ -6,18 +6,22 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tech.kood.kmdb.exception.ResourceNotFoundException;
 import tech.kood.kmdb.model.Genre;
 import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.repository.GenreRepository;
+import tech.kood.kmdb.repository.MovieRepository;
 
 @Service
 public class GenreService {
     
     private final GenreRepository genreRepository;
+    private final MovieRepository movieRepository; // To update owning side on force delete
 
     // Spring will inject the repository
-    public GenreService(GenreRepository genreRepository) {
+    public GenreService(GenreRepository genreRepository, MovieRepository movieRepository) {
         this.genreRepository = genreRepository;
+        this.movieRepository = movieRepository;
     }
 
     // CRUD
@@ -48,6 +52,28 @@ public class GenreService {
     @Transactional
     public void delete(Long id) {
         genreRepository.deleteById(id);
+    }
+
+    // Force delete
+    @Transactional
+    public void delete(Long id, boolean force) {
+        Genre genre = genreRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Genre " + id + " not found"));
+
+        int related = genre.getMovies().size();
+        if (!force && related > 0) {
+            String name = genre.getName();
+            throw new IllegalArgumentException("Cannot delete genre '" + name + "' because it has " + related + " associated movies."); // 400 The GlobalException handler maps IllegalArgumentException
+        }
+
+        if (force) { // Detach from owning side and make a copy to avoid concurrent modification
+            for (Movie m : List.copyOf(genre.getMovies())) {
+                m.getGenres().remove(genre); // Remove the link
+                movieRepository.save(m); // Persist change in the join table.
+            }
+        }
+
+        genreRepository.delete(genre);
     }
 
     @Transactional(readOnly = true)

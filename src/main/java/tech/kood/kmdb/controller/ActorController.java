@@ -59,9 +59,10 @@ public class ActorController {
         .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}") // 204
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        actorService.delete(id);
+    @DeleteMapping("/{id}") // ?force= -> 204/400
+    public ResponseEntity<Void> delete(@PathVariable Long id,
+    @RequestParam(name = "force", defaultValue = "false") boolean force) {
+        actorService.delete(id, force);
         return ResponseEntity.noContent().build();
     }
 

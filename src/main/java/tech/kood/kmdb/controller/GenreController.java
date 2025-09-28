@@ -52,9 +52,15 @@ public class GenreController {
         .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/{id}") // 204
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        genreService.delete(id);
+    @DeleteMapping("/{id}") // ?force=true|false -> 204/400
+    public ResponseEntity<Void> delete(@PathVariable Long id,
+    @RequestParam(name = "force", defaultValue = "false") boolean force) {
+        if (force) {
+            genreService.delete(id);
+        } else {
+            genreService.delete(id, false); // enforce default, block if related
+        }
+
         return ResponseEntity.noContent().build();
     }
 
