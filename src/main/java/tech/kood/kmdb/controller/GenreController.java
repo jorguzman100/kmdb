@@ -56,7 +56,7 @@ public class GenreController {
     public ResponseEntity<Void> delete(@PathVariable Long id,
     @RequestParam(name = "force", defaultValue = "false") boolean force) {
         if (force) {
-            genreService.delete(id);
+            genreService.delete(id, true);
         } else {
             genreService.delete(id, false); // enforce default, block if related
         }

@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import tech.kood.kmdb.exception.DuplicateResourceException;
 import tech.kood.kmdb.exception.ResourceNotFoundException;
 import tech.kood.kmdb.model.Genre;
 import tech.kood.kmdb.model.Movie;
@@ -28,6 +29,18 @@ public class GenreService {
 
     @Transactional
     public Genre create(Genre genre) {
+
+        // Bonus: Ensures creating genre duplicates will not be allowed
+        String name = genre.getName();
+        String trimmed = name.trim();
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Genre name must not be empty.");
+        }
+        if (genreRepository.existsByNameIgnoreCase(trimmed)) {
+            throw new DuplicateResourceException("Genre '" + trimmed + "' already exists.");
+        }
+        genre.setName(trimmed); // Normalize
+
         return genreRepository.save(genre);
     }
     
@@ -44,6 +57,16 @@ public class GenreService {
     @Transactional
     public Optional<Genre> updateName(Long id, String newName) {
         return genreRepository.findById(id).map(genre -> {
+
+            // Bonus: Ensures creating genre duplicates will not be allowed
+            if (newName == null || newName.trim().isEmpty()) {
+                throw new IllegalArgumentException("Genre name must not be empty");
+            }
+            String trimmed = newName.trim();
+            if (!trimmed.equalsIgnoreCase(genre.getName()) && genreRepository.existsByNameIgnoreCase(trimmed)) {
+                throw new DuplicateResourceException("Genre '" + trimmed + "' already exists.");
+            }
+
             genre.setName(newName);
             return genreRepository.save(genre);
         });

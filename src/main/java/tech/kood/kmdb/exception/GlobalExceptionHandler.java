@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import java.util.List;
+
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -35,6 +37,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException ex, HttpServletRequest req) {
         HttpStatus status = HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(status).body(baseError(status, ex.getMessage(), req.getRequestURI()));
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicate(DuplicateResourceException ex, HttpServletRequest req) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         return ResponseEntity.status(status).body(baseError(status, ex.getMessage(), req.getRequestURI()));
     }
 

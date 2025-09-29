@@ -6,4 +6,5 @@ import tech.kood.kmdb.model.Genre;
 
 public interface GenreRepository extends JpaRepository<Genre, Long> {
     
+    boolean existsByNameIgnoreCase(String name);
 }
