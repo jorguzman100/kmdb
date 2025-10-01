@@ -3,6 +3,8 @@ package tech.kood.kmdb.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +49,11 @@ public class GenreService {
     @Transactional(readOnly = true)
     public List<Genre> findAll() {
         return genreRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Genre> findAll(Pageable pageable) {
+        return genreRepository.findAll(pageable); 
     }
 
     @Transactional(readOnly = true)

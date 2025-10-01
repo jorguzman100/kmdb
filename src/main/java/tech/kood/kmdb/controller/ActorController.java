@@ -3,6 +3,8 @@ package tech.kood.kmdb.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,11 +41,28 @@ public class ActorController {
     }
 
     @GetMapping // 200 + list (optional ?name=)
-    public List<Actor> findAllOrByName(@RequestParam(required = false) String name) {
-        if (name != null && !name.isBlank()) {
-            return actorService.findByNameContainingIgnoreCase(name);
+    public ResponseEntity<List<Actor>> findAllOrByName(@RequestParam(required = false) String name) {
+        List<Actor> list = (name != null && !name.isBlank())
+        ? actorService.findByNameContainingIgnoreCase(name)
+        : actorService.findAll();
+        return ResponseEntity.ok(list);
+    }
+
+    @GetMapping(params = {"page", "size"})
+    public ResponseEntity<?> findAllOrByName(
+        @RequestParam(required = false) String name,
+        Pageable pageable) {
+
+        if (pageable.getPageNumber() < 0 || pageable.getPageSize() < 1 || pageable.getPageSize() > 100) {
+            String message = "Invalid pagination parameters: Page must be >= 0 and size must be between 1 and 100.";
+            return ResponseEntity.badRequest().body(message);
         }
-        return actorService.findAll();
+
+        Page<Actor> page = (name != null && !name.isBlank()) 
+        ? actorService.findByNameContainingIgnoreCase(name, pageable) 
+        : actorService.findAll(pageable);
+
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/{id}") // 200 or 404
