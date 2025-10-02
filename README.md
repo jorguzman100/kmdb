@@ -9,106 +9,113 @@ It allows storing and retrieving information about **movies, genres, and actors*
 
 This project follows a **layered architecture** for clarity and maintainability:
 
-- **Core Layers**
-  - **Model (`/model`)**  
-    Defines the entities (Genre, Movie, Actor) with their fields and relationships.  
-  - **Repository (`/repository`)**  
-    Interfaces extending `JpaRepository`. They handle direct communication with the database (SQLite). Example: `MovieRepository` provides CRUD + custom queries.  
-  - **Service (`/service`)**  
-    Contains the business logic. Services call repositories and apply rules (e.g., updating actors in a movie, handling force deletion).  
-  - **Controller (`/controller`)**  
-    Defines the REST API endpoints (`/api/movies`, `/api/actors`, `/api/genres`). Controllers receive requests, call services, and return responses.  
+### Core Layers
 
-- **Supporting Components**
-  - **DTO (`/dto`)**  
-    Used for updates (`PATCH`) so you only send/receive needed fields instead of full entities.  
-  - **Seeder (`/config/Seeder`)**  
-    Automatically loads sample data (genres, movies, actors) into the database when the app starts. You don’t need to add data manually.  
-  - **Exception Handling (`/exception`)**  
-    Centralized error handling with custom exceptions (e.g., `ResourceNotFoundException`). Ensures clear error messages and proper HTTP status codes.  
+- **Model (`/model`)**  
+  Defines the entities (Genre, Movie, Actor) with their fields and relationships.
+
+- **Repository (`/repository`)**  
+  Interfaces extending `JpaRepository`. They handle direct communication with the database (SQLite). Example: `MovieRepository` provides CRUD + custom queries.
+
+- **Service (`/service`)**  
+  Contains the business logic. Services call repositories and apply rules (e.g., updating actors in a movie, handling force deletion).
+
+- **Controller (`/controller`)**  
+  Defines the REST API endpoints (`/api/movies`, `/api/actors`, `/api/genres`). Controllers receive requests, call services, and return responses.
+
+### Supporting Components
+
+- **DTO (`/dto`)**  
+  Used for updates (`PATCH`) so you only send/receive needed fields instead of full entities.
+
+- **Seeder (`/config/Seeder`)**  
+  Automatically loads sample data (genres, movies, actors) into the database when the app starts. You don’t need to add data manually.
+
+- **Exception Handling (`/exception`)**  
+  Centralized error handling with custom exceptions (e.g., `ResourceNotFoundException`). Ensures clear error messages and proper HTTP status codes.
 
 ---
 
 ## ✨ Features (with examples)
 
-- **CRUD operations**  
-  - Create a movie:  
-    ```http
-    POST /api/movies
-    {
-      "title": "Inception",
-      "releaseYear": 2010,
-      "duration": 148,
-      "genres": [1, 2],
-      "actors": [1, 2]
-    }
-    ```  
-  - Get all genres: `GET /api/genres`  
-  - Update an actor’s name:  
-    ```http
-    PATCH /api/actors/3
-    {
-      "name": "Leonardo Wilhelm DiCaprio"
-    }
-    ```  
-  - Delete a movie: `DELETE /api/movies/5`  
+### CRUD operations
+- Create a movie:
+  ```http
+  POST /api/movies
+  {
+    "title": "Inception",
+    "releaseYear": 2010,
+    "duration": 148,
+    "genres": [1, 2],
+    "actors": [1, 2]
+  }
+  ```
+- Get all genres: `GET /api/genres`
+- Update an actor’s name:
+  ```http
+  PATCH /api/actors/3
+  {
+    "name": "Leonardo Wilhelm DiCaprio"
+  }
+  ```
+- Delete a movie: `DELETE /api/movies/5`
 
-- **Relationships**  
-  - A movie can belong to multiple genres: *“Inception” → Action, Sci-Fi, Thriller*.  
-  - An actor can act in multiple movies: *Tom Hanks → Forrest Gump, Cast Away, The Terminal*.  
+### Relationships
+- A movie can belong to multiple genres: *“Inception” → Action, Sci-Fi, Thriller*.  
+- An actor can act in multiple movies: *Tom Hanks → Forrest Gump, Cast Away, The Terminal*.  
 
-- **Filtering**  
-  - By genre: `GET /api/movies?genre=1`  
-  - By year: `GET /api/movies?year=2010`  
-  - By actor: `GET /api/movies?actor=5`  
+### Filtering
+- By genre: `GET /api/movies?genre=1`
+- By year: `GET /api/movies?year=2010`
+- By actor: `GET /api/movies?actor=5`
 
-- **Search**  
-  - Movies by title: `GET /api/movies/search?title=matrix`  
-  - Actors by name: `GET /api/actors?name=streep`  
+### Search
+- Movies by title: `GET /api/movies/search?title=matrix`
+- Actors by name: `GET /api/actors?name=streep`
 
-- **Pagination**  
-  - Get 10 movies at a time: `GET /api/movies?page=0&size=10`  
+### Pagination
+- Get 10 movies at a time: `GET /api/movies?page=0&size=10`
 
-- **Partial Updates (`PATCH`)**  
-  - Only update one field:  
-    ```http
-    PATCH /api/movies/2
-    {
-      "duration": 120
-    }
-    ```  
+### Partial Updates (PATCH)
+- Only update one field:
+  ```http
+  PATCH /api/movies/2
+  {
+    "duration": 120
+  }
+  ```
 
-- **Force Deletion**  
-  - Normal delete fails if related:  
-    ```http
-    DELETE /api/genres/1
-    → 400 Cannot delete genre 'Action' because it has 15 associated movies
-    ```  
-  - Force delete:  
-    ```http
-    DELETE /api/genres/1?force=true
-    → 204 No Content
-    ```  
+### Force Deletion
+- Normal delete fails if related:
+  ```http
+  DELETE /api/genres/1
+  → 400 Cannot delete genre 'Action' because it has 15 associated movies
+  ```
+- Force delete:
+  ```http
+  DELETE /api/genres/1?force=true
+  → 204 No Content
+  ```
 
-- **Error Handling**  
-  - Example: `GET /api/actors/999` →  
-    ```json
-    {
-      "error": "Actor not found"
-    }
-    ```  
-    Status: `404 Not Found`  
+### Error Handling
+- Example: `GET /api/actors/999` →
+  ```json
+  {
+    "error": "Actor not found"
+  }
+  ```
+  Status: `404 Not Found`
 
-- **Validation**  
-  - Invalid date:  
-    ```http
-    POST /api/actors
-    {
-      "name": "John Doe",
-      "birthDate": "1990-13-32"
-    }
-    ```  
-    Response: `400 Bad Request` with error message.  
+### Validation
+- Invalid date:
+  ```http
+  POST /api/actors
+  {
+    "name": "John Doe",
+    "birthDate": "1990-13-32"
+  }
+  ```
+  Response: `400 Bad Request` with error message.
 
 ---
 
@@ -133,6 +140,11 @@ This project follows a **layered architecture** for clarity and maintainability:
    - Uses **SQLite** (`movies.db`).  
    - Sample data (5+ genres, 20+ movies, 15+ actors) is automatically loaded.  
    - You don’t need to do anything extra.  
+   - To reset the database, simply delete the file and restart:
+     ```bash
+     rm movies.db
+     ./mvnw spring-boot:run
+     ```
 
 5. **Testing Tool: Postman (Optional, Free)**  
    - Postman is the easiest way to run and test all endpoints.  
@@ -173,6 +185,25 @@ http://localhost:8080/api
    - `GET /api/movies?actor=5` → movies of actor 5  
    - `GET /api/actors?name=tom` → actors with name “Tom”  
 
+### Testing with Curl (Alternative to Postman)
+A ready-made script runs all tests automatically:
+
+```bash
+sh scripts/curl-smoke-tests.sh
+```
+
+This script will:
+- Create sample genres, actors, and movies.
+- Verify CRUD, filtering, search, pagination.
+- Check error handling and validations.
+- Print ✅ PASS or ❌ FAIL results for each test (T01, T02, …).
+
+👉 If you want to reset the DB before running again:
+```bash
+rm movies.db
+./mvnw spring-boot:run
+```
+
 ---
 
 ## ➕ Additional Features (with examples)
@@ -199,6 +230,4 @@ http://localhost:8080/api
   3. Example:  
      - Expand **GET /api/movies**.  
      - Click **“Try it out”** → then **Execute**.  
-     - The list of movies will appear directly in the browser.  
-
-
+     - The list of movies will appear directly in the browser.
