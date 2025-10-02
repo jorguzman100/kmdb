@@ -198,6 +198,11 @@ This script will:
 - Check error handling and validations.
 - Print ✅ PASS or ❌ FAIL results for each test (T01, T02, …).
 
+- Save the results into:
+  ```
+  scripts/curl-test-report.txt
+  ```
+
 👉 If you want to reset the DB before running again:
 ```bash
 rm movies.db
