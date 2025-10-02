@@ -14,6 +14,8 @@ import tech.kood.kmdb.model.Genre;
 import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.service.GenreService;
 
+// CRUD endpoints for Genre
+// Extra: Pagination with page and size
 @RestController
 @RequestMapping("/api/genres")
 public class GenreController {

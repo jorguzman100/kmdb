@@ -14,6 +14,8 @@ import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.repository.ActorRepository;
 import tech.kood.kmdb.repository.MovieRepository;
 
+// Business logic: CRUD and handle relationships
+// Extra: Pagination
 @Service
 public class ActorService {
 

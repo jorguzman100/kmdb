@@ -9,8 +9,9 @@ import tech.kood.kmdb.repository.ActorRepository;
 import tech.kood.kmdb.repository.GenreRepository;
 import tech.kood.kmdb.repository.MovieRepository;
 
+// Prints repositories counts after the seeding. Shows the DB is ready.
 @Configuration
-@Order(2) // <= ensure this runs AFTER the seeder
+@Order(2)
 public class ServiceSmoke {
 
   @Bean
@@ -25,9 +26,6 @@ public class ServiceSmoke {
       System.out.println("genres.count = " + genreRepo.count());
       System.out.println("actors.count = " + actorRepo.count());
       System.out.println("movies.count = " + movieRepo.count());
-
-      // IMPORTANT: do not traverse lazy relationships here.
-      // Keep the smoke minimal so startup never hangs.
 
       System.out.println(">>> SERVICE SMOKE: OK");
     };

@@ -15,6 +15,9 @@ import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.repository.GenreRepository;
 import tech.kood.kmdb.repository.MovieRepository;
 
+// Business logic: CRUD and handle relationships
+// Extra: Pagination
+// Bonus: Prevent duplication
 @Service
 public class GenreService {
     

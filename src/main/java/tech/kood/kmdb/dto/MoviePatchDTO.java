@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 
+// Allows partial updates without sending the entire movie
 public class MoviePatchDTO {
     // Only validate if present (null = not provided)
     @Size(max = 200, message = "title must be at most 200 characters")

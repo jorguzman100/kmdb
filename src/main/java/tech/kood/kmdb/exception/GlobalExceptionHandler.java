@@ -18,6 +18,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 
+// Returns validation and missing resources errors (in JSON format)
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -39,6 +40,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(baseError(status, ex.getMessage(), req.getRequestURI()));
     }
 
+    // Bonus: Ensures creating genre duplicates will not be allowed
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<Map<String, Object>> handleDuplicate(DuplicateResourceException ex, HttpServletRequest req) {
         HttpStatus status = HttpStatus.BAD_REQUEST;

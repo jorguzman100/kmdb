@@ -8,8 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import tech.kood.kmdb.model.Actor;
 
+// Inherits CRUD helpers from JpaRepository to interact with the DB
 public interface ActorRepository extends JpaRepository<Actor, Long> {
     
+    // The name search
     List<Actor> findByNameContainingIgnoreCase(String name);
     Page<Actor> findByNameContainingIgnoreCase(String name, Pageable pageable);
 

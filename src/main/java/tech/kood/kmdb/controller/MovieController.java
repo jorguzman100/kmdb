@@ -23,6 +23,9 @@ import tech.kood.kmdb.model.Actor;
 import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.service.MovieService;
 
+// CRUD endpoints for Movie + Filtering by genre/year/actor.
+// Extra: Pagination with page and size
+// Extra: Title search
 @RestController
 @RequestMapping("/api/movies")
 public class MovieController {

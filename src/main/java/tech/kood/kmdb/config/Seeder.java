@@ -17,6 +17,9 @@ import tech.kood.kmdb.repository.ActorRepository;
 import tech.kood.kmdb.repository.GenreRepository;
 import tech.kood.kmdb.repository.MovieRepository;
 
+
+
+// Inserts the sample data >=5 Genres, >=20 Movies, >=15 Actors
 @Configuration
 @Order(1)
 public class Seeder {
@@ -122,7 +125,7 @@ public class Seeder {
                 }
                 movieRepo.save(m); // Writes join rows - Movie is the owner of ManyToMany
             }
-            // add at the very end of your seed(...) lambda, after saving all movies
+            // Show summary
             long g = genreRepo.count();
             long a = actorRepo.count();
             long m = movieRepo.count();

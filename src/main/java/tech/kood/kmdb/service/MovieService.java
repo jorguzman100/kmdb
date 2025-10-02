@@ -15,6 +15,8 @@ import tech.kood.kmdb.model.Genre;
 import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.repository.MovieRepository;
 
+// Business logic: CRUD, filtering, and handle relationships
+// Extra: Pagination and title search.
 @Service
 public class MovieService {
 

@@ -22,6 +22,8 @@ import tech.kood.kmdb.model.Actor;
 import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.service.ActorService;
 
+// CRUD endpoints for Actor + Filtering by name.
+// Extra: Pagination with page and size
 @RestController
 @RequestMapping("/api/actors")
 public class ActorController {
