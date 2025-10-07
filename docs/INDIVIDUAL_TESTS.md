@@ -1,9 +1,14 @@
 # Movie Database API — Individual Test Helper (1–64)
 
-Copy/paste-friendly tests for **cURL**, plus matching steps for **Swagger UI** and **Postman**.
-Assumes app at `http://localhost:8080` with seed data loaded.
+cURL + Swagger + Postman steps. Uses **exact seed data** (IDs below) for copy/paste-ready tests.
 
-> Tip: To avoid manual ID lookups, cURL snippets auto-resolve IDs using names via `jq`. In Postman, you can **Import → Raw Text** and paste the cURL.
+**BASE_URL:** `http://localhost:8080`
+
+**Seed ID map (fresh DB):**
+- Genres → Action=1, Sci-Fi=2, Thriller=3, Drama=4, Comedy=5
+- Movies → The Matrix=1, The Matrix Reloaded=2, The Matrix Revolutions=3, Inception=4, The Avengers=5
+- Actors → Leonardo DiCaprio=1, Tom Hardy=2, Keanu Reeves=3, Carrie-Anne Moss=4, Laurence Fishburne=5
+             Robert Downey Jr.=6, Chris Evans=7, Scarlett Johansson=8, Christian Bale=9
 
 Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 
@@ -82,27 +87,40 @@ Swagger UI: `http://localhost:8080/swagger-ui/index.html`
 ---
 
 **19) MovieRepository has a custom query method to find movies by genre id**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-ACTION_ID=$(curl -s "$BASE/api/genres" | jq -r '.[] | select(.name=="Action") | .id' | head -n1)
-curl -s "$BASE/api/movies?genre=$ACTION_ID"
+curl -s "http://localhost:8080/api/movies?genre=1"
 ```
-Swagger: GET `/api/genres` → copy id for **Action** → GET `/api/movies` with `genre=<id>` → Execute.
-Postman: Import the cURL above (Import → Raw Text → Continue → Import). Or manually: GET `${baseUrl}/api/movies?genre=<ActionId>`.
+
+
+**Swagger**
+GET `/api/movies` → set query param `genre=1` → Execute.
+
+
+**Postman**
+GET `${baseUrl}/api/movies?genre=1`
+
 
 ---
 
 **20) ActorRepository has a custom query method to find actors by name (case insensitive). Test GET /api/actors?name={some_actors_name} with different case variations of actors name to verify case-insensitive search**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-curl -s "$BASE/api/actors?name=leonardo diCaprio"
-curl -s "$BASE/api/actors?name=LEONARDO DICAPRIO"
-curl -s "$BASE/api/actors?name=LeoNArdo"
+curl -s "http://localhost:8080/api/actors?name=leonardo"
+curl -s "http://localhost:8080/api/actors?name=LEONARDO"
+curl -s "http://localhost:8080/api/actors?name=DiCaprio"
 ```
-Swagger: GET `/api/actors` with `name` set to different case variants (e.g., `leonardo`, `LEONARDO`).
-Postman: Create GET `${baseUrl}/api/actors` with Query Param `name` = `leonardo`, duplicate tab with `LEONARDO`, etc., or import cURL.
+
+
+**Swagger**
+GET `/api/actors` → set query param `name=leonardo` (repeat with `LEONARDO`, `DiCaprio`) → Execute.
+
+
+**Postman**
+GET `${baseUrl}/api/actors?name=leonardo` (duplicate and vary case).
+
 
 ---
 
@@ -115,88 +133,128 @@ Postman: Create GET `${baseUrl}/api/actors` with Query Param `name` = `leonardo`
 ---
 
 **23) Valid birthDate in Actor is correctly handled using ISO 8601 (YYYY-MM-DD). Test POST /api/actors and verify it is stored as YYYY-MM-DD.**
-cURL:
+
+**cURL**
 ```bash
-curl -i -X POST "http://localhost:8080/api/actors" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Test Actor ISO","birthDate":"1990-05-21"}'
+curl -i -X POST "http://localhost:8080/api/actors" -H "Content-Type: application/json" -d '{"name":"Test Actor ISO","birthDate":"1990-05-21"}'
 ```
-Swagger: POST `/api/actors` → Body (application/json) with `{ "name": "Test Actor ISO", "birthDate": "1990-05-21" }` → Execute. Expect 201.
-Postman: POST `${baseUrl}/api/actors` → Body: raw JSON `{ "name":"Test Actor ISO", "birthDate":"1990-05-21" }` → Send. Expect 201.
+
+
+**Swagger**
+POST `/api/actors` → Body: `{ "name": "Test Actor ISO", "birthDate": "1990-05-21" }` → Execute (expect 201).
+
+
+**Postman**
+POST `${baseUrl}/api/actors` → Body (raw JSON): `{ "name":"Test Actor ISO", "birthDate":"1990-05-21" }` → Send.
+
 
 ---
 
 **24) Actor creation fails with appropriate error when an invalid birthDate is provided. Test POST /api/actors with an invalid birthDate format (e.g., "1990-13-32") and verify it returns a 400 Bad Request status with a clear error message**
-cURL:
+
+**cURL**
 ```bash
-curl -i -X POST "http://localhost:8080/api/actors" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Bad Date","birthDate":"1990-13-32"}'
+curl -i -X POST "http://localhost:8080/api/actors" -H "Content-Type: application/json" -d '{"name":"Bad Date","birthDate":"1990-13-32"}'
 ```
-Swagger: POST `/api/actors` with invalid `birthDate` (e.g., `1990-13-32`) → Execute. Expect 400 with validation error.
-Postman: POST `${baseUrl}/api/actors` → Body: `{ "name":"Bad Date", "birthDate":"1990-13-32" }` → Send. Expect 400.
+
+
+**Swagger**
+POST `/api/actors` with `{ "name": "Bad Date", "birthDate": "1990-13-32" }` → Execute (expect 400).
+
+
+**Postman**
+POST `${baseUrl}/api/actors` with invalid `birthDate` → Send (expect 400).
+
 
 ---
 
 **25) MovieService has a method to get all movies in a specific genre. Verify that GET /api/movies?genre={genreId} returns all movies associated with the specified genre.**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-ACTION_ID=$(curl -s "$BASE/api/genres" | jq -r '.[] | select(.name=="Action") | .id' | head -n1)
-curl -s "$BASE/api/movies?genre=$ACTION_ID"
+curl -s "http://localhost:8080/api/movies?genre=1"
 ```
-Swagger: GET `/api/movies` with Query Param `genre=<ActionId>` → Execute.
-Postman: GET `${baseUrl}/api/movies?genre=<ActionId>`; or import cURL above.
+
+
+**Swagger**
+GET `/api/movies` → `genre=1` → Execute.
+
+
+**Postman**
+GET `${baseUrl}/api/movies?genre=1`
+
 
 ---
 
 **26) MovieService has a method to get all actors in a specific movie. Check that GET /api/movies/{movieId}/actors retrieves all actors starring in the given movie.**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-INCEPTION_ID=$(curl -s "$BASE/api/movies" | jq -r '.[] | select(.title=="Inception") | .id' | head -n1)
-curl -s "$BASE/api/movies/$INCEPTION_ID/actors"
+curl -s "http://localhost:8080/api/movies/4/actors"
 ```
-Swagger: GET `/api/movies/{id}/actors` with `id` of Inception → Execute.
-Postman: GET `${baseUrl}/api/movies/{id}/actors` with `id` = Inception id (find via GET `/api/movies`), or import cURL.
+
+
+**Swagger**
+GET `/api/movies/{id}/actors` with `id=4` → Execute.
+
+
+**Postman**
+GET `${baseUrl}/api/movies/4/actors`
+
 
 ---
 
 **27) ActorService has a method to get all movies an actor has appeared in. Ensure GET /api/movies?actor={Actor.id} returns all movies the specified actor has starred in.**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-LEO_ID=$(curl -s "$BASE/api/actors?name=leonardo%20dicaprio" | jq -r '.[0].id')
-curl -s "$BASE/api/movies?actor=$LEO_ID"
+curl -s "http://localhost:8080/api/movies?actor=1"
 ```
-Swagger: GET `/api/movies` with Query Param `actor=<actorId>` (e.g., Leonardo DiCaprio id) → Execute.
-Postman: GET `${baseUrl}/api/movies?actor=<actorId>`; obtain `actorId` by GET `/api/actors?name=leonardo%20dicaprio`, or import cURL.
+
+
+**Swagger**
+GET `/api/movies` → `actor=1` → Execute.
+
+
+**Postman**
+GET `${baseUrl}/api/movies?actor=1`
+
 
 ---
 
 **28) A method exists to update a movie's actors list, handling both adding and removing actors. Test PATCH /api/movies/{id} with a request body containing updated actor information. Verify it returns Status: 200 OK and full, updated movie object.**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-INCEPTION_ID=$(curl -s "$BASE/api/movies" | jq -r '.[] | select(.title=="Inception") | .id' | head -n1)
-LEO_ID=$(curl -s "$BASE/api/actors?name=leonardo%20dicaprio" | jq -r '.[0].id')
-TOM_ID=$(curl -s "$BASE/api/actors?name=tom%20hardy" | jq -r '.[0].id')
-curl -i -X PATCH "$BASE/api/movies/$INCEPTION_ID" \
-  -H "Content-Type: application/json" \
-  -d "{\"actorIds\":[\"$LEO_ID\",\"$TOM_ID\"]}"
+curl -i -X PATCH "http://localhost:8080/api/movies/4" -H "Content-Type: application/json" -d '{"actorIds":[1,2]}'
 ```
-Swagger: PATCH `/api/movies/{id}` with body `{ "actorIds": [<ids>] }` → Execute. Expect 200 with updated movie.
-Postman: PATCH `${baseUrl}/api/movies/{id}` → Body JSON `{ "actorIds":[<ids>] }`; or import cURL above.
+
+
+**Swagger**
+PATCH `/api/movies/{id}` (`id=4`) → Body: `{ "actorIds":[1,2] }` → Execute.
+
+
+**Postman**
+PATCH `${baseUrl}/api/movies/4` → Body: `{ "actorIds":[1,2] }` → Send.
+
 
 ---
 
 **29) Movies can be filtered by release year. Verify that GET /api/movies?year={releaseYear} returns all movies released in the specified year.**
-cURL:
+
+**cURL**
 ```bash
 curl -s "http://localhost:8080/api/movies?year=1999"
 ```
-Swagger: GET `/api/movies` with Query Param `year=1999` → Execute.
-Postman: GET `${baseUrl}/api/movies?year=1999`.
+
+
+**Swagger**
+GET `/api/movies` → `year=1999` → Execute.
+
+
+**Postman**
+GET `${baseUrl}/api/movies?year=1999`
+
 
 ---
 
@@ -205,33 +263,43 @@ Postman: GET `${baseUrl}/api/movies?year=1999`.
 ---
 
 **31) id field is immutable in PATCH operations. Attempt PATCH requests that try to modify the id field of Genre, Movie, and Actor entities**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-GENRE_ID=$(curl -s "$BASE/api/genres" | jq -r '.[] | select(.name=="Action") | .id' | head -n1)
-curl -i -X PATCH "$BASE/api/genres/$GENRE_ID" -H "Content-Type: application/json" -d '{"id":999,"name":"Action"}'
+curl -i -X PATCH "http://localhost:8080/api/genres/1" -H "Content-Type: application/json" -d '{"id":999,"name":"Action"}'
 
-ACTOR_ID=$(curl -s "$BASE/api/actors?name=leonardo%20dicaprio" | jq -r '.[0].id')
-curl -i -X PATCH "$BASE/api/actors/$ACTOR_ID" -H "Content-Type: application/json" -d '{"id":999,"name":"Leonardo DiCaprio"}'
+curl -i -X PATCH "http://localhost:8080/api/actors/1" -H "Content-Type: application/json" -d '{"id":999,"name":"Leonardo DiCaprio"}'
 
-MOVIE_ID=$(curl -s "$BASE/api/movies" | jq -r '.[] | select(.title=="Inception") | .id' | head -n1)
-curl -i -X PATCH "$BASE/api/movies/$MOVIE_ID" -H "Content-Type: application/json" -d '{"id":999,"title":"Inception"}'
+curl -i -X PATCH "http://localhost:8080/api/movies/4" -H "Content-Type: application/json" -d '{"id":999,"title":"Inception"}'
 ```
-Swagger: Attempt PATCH on each entity including an `id` field in body → Execute → expect 400/validation error.
-Postman: PATCH endpoints with body including `id` to verify immutability, or import cURL above.
+
+
+**Swagger**
+PATCH each entity including an `id` in body → Execute → expect 400/validation error.
+
+
+**Postman**
+Create 3 PATCH requests with `id` in body to verify immutability.
+
 
 ---
 
 **32) GenreService implements full deletion when the force parameter is true. Confirm DELETE /api/genres/{genreId}?force=true removes the genre and associated relationships**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-COMEDY_ID=$(curl -s "$BASE/api/genres" | jq -r '.[] | select(.name=="Comedy") | .id' | head -n1)
-curl -i -X DELETE "$BASE/api/genres/$COMEDY_ID"
-curl -i -X DELETE "$BASE/api/genres/$COMEDY_ID?force=true"
+curl -i -X DELETE "http://localhost:8080/api/genres/5"
+curl -i -X DELETE "http://localhost:8080/api/genres/5?force=true"
 ```
-Swagger: DELETE `/api/genres/{id}` (first without `force`, then with `force=true`) → Execute. Expect 400 then 204.
-Postman: DELETE `${baseUrl}/api/genres/{id}` (no `force`) then `${baseUrl}/api/genres/{id}?force=true`.
+
+
+**Swagger**
+DELETE `/api/genres/{id}` with `id=5` → first without `force` (expect 400), then with `force=true` (expect 204).
+
+
+**Postman**
+DELETE `${baseUrl}/api/genres/5` then `${baseUrl}/api/genres/5?force=true`.
+
 
 ---
 
@@ -248,68 +316,109 @@ Postman: DELETE `${baseUrl}/api/genres/{id}` (no `force`) then `${baseUrl}/api/g
 ---
 
 **36) POST endpoints return HTTP status 201 (Created) and the created entity. Verify it returns Status: 201 Created and newly created entity object**
-cURL:
+
+**cURL**
 ```bash
 curl -i -X POST "http://localhost:8080/api/genres" -H "Content-Type: application/json" -d '{"name":"TestGenre"}'
+
 curl -i -X POST "http://localhost:8080/api/actors" -H "Content-Type: application/json" -d '{"name":"Test Actor","birthDate":"1980-01-01"}'
-curl -i -X POST "http://localhost:8080/api/movies" -H "Content-Type: application/json" -d '{"title":"Test Movie","releaseYear":2020,"duration":120}'
+
+curl -i -X POST "http://localhost:8080/api/movies" -H "Content-Type: application/json" -d '{"title":"Test Movie","releaseYear":2020,"duration":120}
 ```
-Swagger: POST each of `/api/genres`, `/api/actors`, `/api/movies` with shown bodies → Execute. Expect 201.
-Postman: Create three POST requests with the same bodies, or import the cURL above.
+
+
+**Swagger**
+POST `/api/genres`, `/api/actors`, `/api/movies` with shown bodies → Execute (expect 201).
+
+
+**Postman**
+Three POSTs with same bodies.
+
 
 ---
 
 **37) GET endpoints for retrieving all entities are implemented. Test the complete retrieval of Genre, Movie and Actor entities**
-cURL:
+
+**cURL**
 ```bash
 curl -s "http://localhost:8080/api/genres"
+
 curl -s "http://localhost:8080/api/movies"
+
 curl -s "http://localhost:8080/api/actors"
 ```
-Swagger: GET `/api/genres`, `/api/movies`, `/api/actors` → Execute.
-Postman: Create three GET requests to the same URLs, or import the cURL above.
+
+
+**Swagger**
+GET `/api/genres`, `/api/movies`, `/api/actors` → Execute.
+
+
+**Postman**
+Three GET requests to the same URLs.
+
 
 ---
 
 **38) PATCH endpoints return HTTP status 200 (OK) and the updated entity**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-GENRE_ID=$(curl -s "$BASE/api/genres" | jq -r '.[] | select(.name=="Drama") | .id' | head -n1)
-curl -i -X PATCH "$BASE/api/genres/$GENRE_ID" -H "Content-Type: application/json" -d '{"name":"Drama (Updated)"}'
+curl -i -X PATCH "http://localhost:8080/api/genres/4" -H "Content-Type: application/json" -d '{"name":"Drama (Updated)"}'
 
-MOVIE_ID=$(curl -s "$BASE/api/movies" | jq -r '.[] | select(.title=="The Matrix") | .id' | head -n1)
-curl -i -X PATCH "$BASE/api/movies/$MOVIE_ID" -H "Content-Type: application/json" -d '{"duration":137}'
+curl -i -X PATCH "http://localhost:8080/api/movies/1" -H "Content-Type: application/json" -d '{"duration":137}'
 
-ACTOR_ID=$(curl -s "$BASE/api/actors?name=tom%20hardy" | jq -r '.[0].id')
-curl -i -X PATCH "$BASE/api/actors/$ACTOR_ID" -H "Content-Type: application/json" -d '{"name":"Tom Hardy (Updated)"}'
+curl -i -X PATCH "http://localhost:8080/api/actors/2" -H "Content-Type: application/json" -d '{"name":"Tom Hardy (Updated)"}
 ```
-Swagger: PATCH `/api/genres/{id}` (name), `/api/movies/{id}` (duration), `/api/actors/{id}` (name) → Execute. Expect 200.
-Postman: Create three PATCH requests with shown bodies; or import the cURL above.
+
+
+**Swagger**
+PATCH `/api/genres/{id}` (`id=4`), `/api/movies/{id}` (`id=1`), `/api/actors/{id}` (`id=2`) → Execute (expect 200).
+
+
+**Postman**
+Three PATCHs with shown bodies.
+
 
 ---
 
 **39) DELETE endpoints return HTTP status 204 (No Content) on successful deletion**
-cURL:
+
+**cURL**
 ```bash
 curl -i -X POST "http://localhost:8080/api/genres" -H "Content-Type: application/json" -d '{"name":"TempDelete"}'
-GEN_ID=$(curl -s "http://localhost:8080/api/genres" | jq -r '.[] | select(.name=="TempDelete") | .id' | head -n1)
-curl -i -X DELETE "http://localhost:8080/api/genres/$GEN_ID"
+curl -i -X DELETE "http://localhost:8080/api/genres/6"
 ```
-Swagger: POST `/api/genres` TempDelete → copy id → DELETE `/api/genres/{id}` → Expect 204.
-Postman: POST then DELETE as above; or import cURL.
+
+
+**Swagger**
+POST `/api/genres` with name `TempDelete` → note returned `id` (likely next) → DELETE `/api/genres/{thatId}` → expect 204.
+
+
+**Postman**
+POST then DELETE the returned id.
+
 
 ---
 
 **40) Error handling returns HTTP status 404 (Not Found) when an entity is not found**
-cURL:
+
+**cURL**
 ```bash
 curl -i "http://localhost:8080/api/genres/999999"
+
 curl -i "http://localhost:8080/api/movies/999999"
+
 curl -i "http://localhost:8080/api/actors/999999"
 ```
-Swagger: GET each `/api/.../{id}` with a non-existent id → Execute. Expect 404.
-Postman: Create three GETs with high non-existent ids; or import cURL.
+
+
+**Swagger**
+GET each `/api/.../{id}` with a non-existent id → Execute (expect 404).
+
+
+**Postman**
+Three GETs with clearly non-existent ids.
+
 
 ---
 
@@ -358,79 +467,110 @@ Postman: Create three GETs with high non-existent ids; or import cURL.
 ---
 
 **52) A new movie with associated genre and actors can be created in a single POST request. Verify it returns Status: 201 Created and newly created entity object**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-ACTION_ID=$(curl -s "$BASE/api/genres" | jq -r '.[] | select(.name=="Action") | .id' | head -n1)
-SCIFI_ID=$(curl -s "$BASE/api/genres" | jq -r '.[] | select(.name=="Sci-Fi") | .id' | head -n1)
-KEANU_ID=$(curl -s "$BASE/api/actors?name=keanu%20reeves" | jq -r '.[0].id')
-CARRIE_ID=$(curl -s "$BASE/api/actors?name=carrie-anne%20moss" | jq -r '.[0].id')
-curl -i -X POST "$BASE/api/movies" \
-  -H "Content-Type: application/json" \
-  -d "{\"title\":\"The Matrix\",\"releaseYear\":1999,\"duration\":136,\"genreIds\":[$ACTION_ID,$SCIFI_ID],\"actorIds\":[$KEANU_ID,$CARRIE_ID]}"
+curl -i -X POST "http://localhost:8080/api/movies" -H "Content-Type: application/json" -d '{"title":"The Matrix", "releaseYear":1999, "duration":136, "genreIds":[1,2], "actorIds":[3,4]}'
 ```
-Swagger: POST `/api/movies` with JSON body including `genreIds` and `actorIds` resolved to real IDs → Execute. Expect 201.
-Postman: POST `${baseUrl}/api/movies` with the same JSON as above (get IDs via GETs or import cURL).
+
+
+**Swagger**
+POST `/api/movies` → Body: `{ "title":"The Matrix", "releaseYear":1999, "duration":136, "genreIds":[1,2], "actorIds":[3,4] }` → Execute (expect 201).
+
+
+**Postman**
+POST the same JSON body.
+
 
 ---
 
 **53) A movie's actors list can be updated using a PATCH request, both adding and removing actors. Verify it returns Status: 200 OK and updated entity object**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-MATRIX_ID=$(curl -s "$BASE/api/movies" | jq -r '.[] | select(.title=="The Matrix") | .id' | head -n1)
-KEANU_ID=$(curl -s "$BASE/api/actors?name=keanu%20reeves" | jq -r '.[0].id')
-FISH_ID=$(curl -s "$BASE/api/actors?name=laurence%20fishburne" | jq -r '.[0].id')
-curl -i -X PATCH "$BASE/api/movies/$MATRIX_ID" \
-  -H "Content-Type: application/json" \
-  -d "{\"actorIds\":[$KEANU_ID,$FISH_ID]}"
+curl -i -X PATCH "http://localhost:8080/api/movies/1" -H "Content-Type: application/json" -d '{"actorIds":[3,5]}'
 ```
-Swagger: PATCH `/api/movies/{id}` with `{ "actorIds": [<id1>,<id2>] }` → Execute. Expect 200.
-Postman: PATCH `${baseUrl}/api/movies/{id}` with body showing the updated `actorIds`, or import cURL.
+
+
+**Swagger**
+PATCH `/api/movies/{id}` with `id=1` → Body: `{ "actorIds":[3,5] }` → Execute (expect 200).
+
+
+**Postman**
+PATCH the same body.
+
 
 ---
 
 **54) The default behaviour when attempting to delete a resource with an existing relationship is demonstrated. Operation must not be completed. Response code 400 and descriptive Response body are returned**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-ACTION_ID=$(curl -s "$BASE/api/genres" | jq -r '.[] | select(.name=="Action") | .id' | head -n1)
-curl -i -X DELETE "$BASE/api/genres/$ACTION_ID"
+curl -i -X DELETE "http://localhost:8080/api/genres/1"
 ```
-Swagger: DELETE `/api/genres/{id}` (with existing relationships) without `force` → Execute. Expect 400.
-Postman: DELETE `${baseUrl}/api/genres/{id}` (for a related genre like Action).
+
+
+**Swagger**
+DELETE `/api/genres/{id}` with `id=1` (has relationships) → Execute (expect 400 with message).
+
+
+**Postman**
+DELETE `${baseUrl}/api/genres/1` (expect 400).
+
 
 ---
 
 **55) Error handling can be demonstrated by attempting to retrieve a non-existent entity and checking for a 404 status code**
-cURL:
+
+**cURL**
 ```bash
 curl -i "http://localhost:8080/api/movies/42424242"
 ```
-Swagger: GET `/api/movies/{id}` with non-existent id → Execute. Expect 404.
-Postman: GET `${baseUrl}/api/movies/42424242`.
+
+
+**Swagger**
+GET `/api/movies/{id}` with a non-existent id (e.g., 42424242) → Execute (expect 404).
+
+
+**Postman**
+GET `${baseUrl}/api/movies/42424242`.
+
 
 ---
 
 **56) Creating an entity with invalid data (e.g., null title for a movie) results in a 400 status code**
-cURL:
+
+**cURL**
 ```bash
 curl -i -X POST "http://localhost:8080/api/movies" -H "Content-Type: application/json" -d '{"title":null,"releaseYear":2020,"duration":120}'
 ```
-Swagger: POST `/api/movies` with invalid body (e.g., `title=null`) → Execute. Expect 400.
-Postman: POST `${baseUrl}/api/movies` with invalid body `{ "title": null, "releaseYear": 2020, "duration": 120 }`.
+
+
+**Swagger**
+POST `/api/movies` with `{ "title": null, "releaseYear": 2020, "duration": 120 }` → Execute (expect 400).
+
+
+**Postman**
+POST with the same invalid body (expect 400).
+
 
 ---
 
 **57) Force deleting an actor (force=true) removes it from associated movies and deletes the actor**
-cURL:
+
+**cURL**
 ```bash
-BASE="http://localhost:8080"
-TOM_ID=$(curl -s "$BASE/api/actors?name=tom%20hardy" | jq -r '.[0].id')
-curl -i -X DELETE "$BASE/api/actors/$TOM_ID?force=true"
+curl -i -X DELETE "http://localhost:8080/api/actors/2?force=true"
 ```
-Swagger: DELETE `/api/actors/{id}` with `force=true` → Execute. Expect 204 and relationships removed.
-Postman: DELETE `${baseUrl}/api/actors/{id}?force=true` (for Tom Hardy id), or import cURL.
+
+
+**Swagger**
+DELETE `/api/actors/{id}?force=true` with `id=2` → Execute (expect 204).
+
+
+**Postman**
+DELETE `${baseUrl}/api/actors/2?force=true`.
+
 
 ---
 
@@ -443,44 +583,78 @@ Postman: DELETE `${baseUrl}/api/actors/{id}?force=true` (for Tom Hardy id), or i
 ---
 
 **60) Pagination is implemented for GET requests that return multiple entities. Verify GET /api/movies?page=0&size=10 returns the first 10 movies**
-cURL:
+
+**cURL**
 ```bash
 curl -s "http://localhost:8080/api/movies?page=0&size=10"
 ```
-Swagger: GET `/api/movies` with `page=0`, `size=10` → Execute.
-Postman: GET `${baseUrl}/api/movies?page=0&size=10`.
+
+
+**Swagger**
+GET `/api/movies` with `page=0`, `size=10` → Execute.
+
+
+**Postman**
+GET `${baseUrl}/api/movies?page=0&size=10`.
+
 
 ---
 
 **61) Proper error handling and input validation for invalid pagination parameters is implemented. Test GET /api/movies?page=-1&size=99999 and verify it returns an appropriate error response**
-cURL:
+
+**cURL**
 ```bash
 curl -i "http://localhost:8080/api/movies?page=-1&size=99999"
 ```
-Swagger: GET `/api/movies` with invalid `page=-1`, `size=99999` → Execute. Expect 400.
-Postman: GET `${baseUrl}/api/movies?page=-1&size=99999`.
+
+
+**Swagger**
+GET `/api/movies` with `page=-1`, `size=99999` → Execute (expect 400).
+
+
+**Postman**
+GET `${baseUrl}/api/movies?page=-1&size=99999`.
+
 
 ---
 
 **62) Simple search functionality for movies by title is implemented. Confirm GET /api/movies/search?title=matrix returns movies with "matrix" (or any other similar example) in the title**
-cURL:
+
+**cURL**
 ```bash
 curl -s "http://localhost:8080/api/movies/search?title=matrix"
 ```
-Swagger: GET `/api/movies/search` with `title=matrix` (optionally add `page`/`size`) → Execute.
-Postman: GET `${baseUrl}/api/movies/search?title=matrix`.
+
+
+**Swagger**
+GET `/api/movies/search` with `title=matrix` → Execute.
+
+
+**Postman**
+GET `${baseUrl}/api/movies/search?title=matrix`.
+
 
 ---
 
 **63) Case-insensitive and partial match search for movie titles is implemented. Test GET /api/movies/search?title=star with various case combinations and partial words**
-cURL:
+
+**cURL**
 ```bash
 curl -s "http://localhost:8080/api/movies/search?title=star"
+
 curl -s "http://localhost:8080/api/movies/search?title=STAR"
+
 curl -s "http://localhost:8080/api/movies/search?title=Sta"
 ```
-Swagger: GET `/api/movies/search` with `title` variants: `star`, `STAR`, `Sta` → Execute.
-Postman: GET three requests with the same variants; or import cURL above.
+
+
+**Swagger**
+GET `/api/movies/search` with `title=star`, then `STAR`, then `Sta` → Execute.
+
+
+**Postman**
+Three GETs with those titles.
+
 
 ---
 
