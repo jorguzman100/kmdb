@@ -1,6 +1,6 @@
 # Movie Database API 🎬
 
-A simple REST API built with **Spring Boot** and **JPA** to help a local film society manage their movie collection.  
+A simple REST API built with **Spring Boot** and **JPA** to manage a movie collection.  
 It allows storing and retrieving information about **movies, genres, and actors**, including their relationships.  
 
 ---
@@ -11,32 +11,33 @@ This project follows a **layered architecture** for clarity and maintainability:
 
 ### Core Layers
 
-- **Model (`/model`)**  
-  Defines the entities (Genre, Movie, Actor) with their fields and relationships.
+- **Controller**  
+Receives requests, call services, and return responses through the REST API endpoints (`/api/movies`, `/api/actors`, `/api/genres`). 
 
-- **Repository (`/repository`)**  
-  Interfaces extending `JpaRepository`. They handle direct communication with the database (SQLite). Example: `MovieRepository` provides CRUD + custom queries.
+- **Service**  
+Contains the business logic. Services call repositories and apply rules (e.g., updating actors in a movie, handling force deletion).
 
-- **Service (`/service`)**  
-  Contains the business logic. Services call repositories and apply rules (e.g., updating actors in a movie, handling force deletion).
+- **Repository**  
+Handles direct communication with the database (SQLite).
 
-- **Controller (`/controller`)**  
-  Defines the REST API endpoints (`/api/movies`, `/api/actors`, `/api/genres`). Controllers receive requests, call services, and return responses.
+- **Model**  
+Defines the entities (Genre, Movie, Actor) with their fields and relationships.
+
 
 ### Supporting Components
 
-- **DTO (`/dto`)**  
+- **DTO**  
   Used for updates (`PATCH`) so you only send/receive needed fields instead of full entities.
 
-- **Seeder (`/config/Seeder`)**  
+- **Seeder**  
   Automatically loads sample data (genres, movies, actors) into the database when the app starts. You don’t need to add data manually.
 
-- **Exception Handling (`/exception`)**  
+- **Exception Handling**  
   Centralized error handling with custom exceptions (e.g., `ResourceNotFoundException`). Ensures clear error messages and proper HTTP status codes.
 
 ---
 
-## ✨ Features (with examples)
+## ✨ Features
 
 ### CRUD operations
 - Create a movie:
@@ -146,14 +147,20 @@ This project follows a **layered architecture** for clarity and maintainability:
      ./mvnw spring-boot:run
      ```
 
-5. **Testing Tool: Postman (Optional, Free)**  
-   - Postman is the easiest way to run and test all endpoints.  
-   - Free, works in browser or desktop app. Account is optional.  
-   - Tutorial for beginners → [Postman API Testing Tutorial](https://community.postman.com/t/postman-api-testing-tutorial-for-beginner/64511)  
-   - Two easy options to use it:  
-     1. **Import manually**: Import both the collection (`Movie Database API.postman_collection.json`) and environment (`movies-api.postman_environment.json`) from the `postman/` folder.  
-     2. **Direct link (easiest)**: Join via this invitation → [Postman Workspace](https://web.postman.co/workspace/e1f00e5d-ab48-4b1f-8e98-cdb34f7af768).  
+5. **Testing Tool: Postman**  
 
+   - Postman is the easiest way to run and test all endpoints.  
+   - Free, works in browser or desktop app.  
+   - Tutorial for beginners → [Postman API Testing Tutorial](https://community.postman.com/t/postman-api-testing-tutorial-for-beginner/64511)      
+
+    - On Collections, click "Import" button.
+    - Drag and drop the collection and environment files from the`postman/` folder. 
+    - Click on `Collections/Movie Database API`.
+    - On the top-right-corner select the environment `movies-api`.
+    - Hover on the `Collections/Movie Database API`, click on the 3 dots and press`Run`.
+    - Select `Run manually` and click `Run Movie Database API`.
+       
+      → If everything went well, you will see the 39 tests with "PASS" results.
 ---
 
 ## 📚 Usage Guide
