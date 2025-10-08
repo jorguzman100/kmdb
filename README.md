@@ -1,245 +1,148 @@
-# Movie Database API 🎬
+# 🎬 Movie Database API
 
-A simple REST API built with **Spring Boot** and **JPA** to manage a movie collection.  
-It allows storing and retrieving information about **movies, genres, and actors**, including their relationships.  
+## 📖 Project Overview
 
----
+The **Movie Database API** is a RESTful application built with **Spring Boot** and **Spring Data JPA**, designed to manage a movie collection.  
+It provides endpoints to manage **movies**, **genres**, and **actors**, allowing easy creation, update, search, and deletion of entries while handling relationships between them.
 
-## 🚀 Project Overview
+### 💻 Technologies Used
+- **Spring Boot** – framework for rapid backend development  
+- **Spring Data JPA** – ORM layer to simplify database operations  
+- **SQLite** – lightweight embedded database    
+- **Postman** – API testing and validation tools  
+- **Curl** – API testing and validation tools  (additional)
+- **Swagger** – visual documentation and live API testing (bonus) 
 
-This project follows a **layered architecture** for clarity and maintainability:
+## 🧩 Features and Bonus Functionality
 
-### Core Layers
+| **Feature** | **Description** |
+|--------------|-----------------|
+| **Full CRUD operations** | Create, read, update, and delete Movies, Genres, and Actors through dedicated endpoints. |
+| **Many-to-Many relationships** | Movies ↔ Genres and Movies ↔ Actors. Each movie can belong to multiple genres and feature multiple actors. |
+| **Filtering and searching** | Retrieve movies by genre, year, or actor; search actors by name (case-insensitive). |
+| **Pagination** | Limit results for large datasets using query parameters like `page` and `size`. Example: `GET /api/movies?page=0&size=10`. |
+| **Partial updates (PATCH)** | Update only specific fields of an entity instead of sending the full object. |
+| **Force deletion** | Delete an entity with existing relationships using `?force=true` to automatically clear associations. |
+| **Custom error handling** | Global exception management with `@ControllerAdvice` provides consistent 400/404 responses and clear messages. |
+| **Input validation** | Enforces data integrity with annotations like `@Valid`, `@NotNull`, and `@Size`. Invalid input returns a 400 error. |
+| **Sample data seeder** | Automatically loads 5 genres, 20 movies, and 15 actors when the application starts for immediate testing. |
+| **SQLite embedded database** | Requires no manual installation or setup. Automatically creates a local file `movies.db`. |
+| **Integrated testing tools** | Ready-to-use testing support for Postman, Curl, and Swagger UI. |
+| **Swagger UI (bonus)** | Interactive visual documentation allowing users to test API endpoints directly from the browser. |
 
-- **Controller**  
-Receives requests, call services, and return responses through the REST API endpoints (`/api/movies`, `/api/actors`, `/api/genres`). 
+## ⚙️ Setup and Installation Instructions
 
-- **Service**  
-Contains the business logic. Services call repositories and apply rules (e.g., updating actors in a movie, handling force deletion).
+### 1. Prerequisites
+Before you begin, ensure you have installed:
+- **Java 17** or newer 
+- **Maven** - No need to manually install it — the project already includes the **Maven Wrapper** (`mvnw` and `mvnw.cmd`), which automatically downloads and uses the correct Maven version for you.
+- **SQLite** - No need to install  manually either — it’s an embedded database. The necessary driver is already included, and a new local database file (`movies.db`) will be created automatically when you first run the app.
 
-- **Repository**  
-Handles direct communication with the database (SQLite).
+### 2. Download, Build, and Run
+**Download** the submitted project and run it directly with the Maven wrapper — there’s no need for manual compilation.
 
-- **Model**  
-Defines the entities (Genre, Movie, Actor) with their fields and relationships.
-
-
-### Supporting Components
-
-- **DTO**  
-  Used for updates (`PATCH`) so you only send/receive needed fields instead of full entities.
-
-- **Seeder**  
-  Automatically loads sample data (genres, movies, actors) into the database when the app starts. You don’t need to add data manually.
-
-- **Exception Handling**  
-  Centralized error handling with custom exceptions (e.g., `ResourceNotFoundException`). Ensures clear error messages and proper HTTP status codes.
-
----
-
-## ✨ Features
-
-### CRUD operations
-- Create a movie:
-  ```http
-  POST /api/movies
-  {
-    "title": "Inception",
-    "releaseYear": 2010,
-    "duration": 148,
-    "genres": [1, 2],
-    "actors": [1, 2]
-  }
-  ```
-- Get all genres: `GET /api/genres`
-- Update an actor’s name:
-  ```http
-  PATCH /api/actors/3
-  {
-    "name": "Leonardo Wilhelm DiCaprio"
-  }
-  ```
-- Delete a movie: `DELETE /api/movies/5`
-
-### Relationships
-- A movie can belong to multiple genres: *“Inception” → Action, Sci-Fi, Thriller*.  
-- An actor can act in multiple movies: *Tom Hanks → Forrest Gump, Cast Away, The Terminal*.  
-
-### Filtering
-- By genre: `GET /api/movies?genre=1`
-- By year: `GET /api/movies?year=2010`
-- By actor: `GET /api/movies?actor=5`
-
-### Search
-- Movies by title: `GET /api/movies/search?title=matrix`
-- Actors by name: `GET /api/actors?name=streep`
-
-### Pagination
-- Get 10 movies at a time: `GET /api/movies?page=0&size=10`
-
-### Partial Updates (PATCH)
-- Only update one field:
-  ```http
-  PATCH /api/movies/2
-  {
-    "duration": 120
-  }
-  ```
-
-### Force Deletion
-- Normal delete fails if related:
-  ```http
-  DELETE /api/genres/1
-  → 400 Cannot delete genre 'Action' because it has 15 associated movies
-  ```
-- Force delete:
-  ```http
-  DELETE /api/genres/1?force=true
-  → 204 No Content
-  ```
-
-### Error Handling
-- Example: `GET /api/actors/999` →
-  ```json
-  {
-    "error": "Actor not found"
-  }
-  ```
-  Status: `404 Not Found`
-
-### Validation
-- Invalid date:
-  ```http
-  POST /api/actors
-  {
-    "name": "John Doe",
-    "birthDate": "1990-13-32"
-  }
-  ```
-  Response: `400 Bad Request` with error message.
-
----
-
-## ⚙️ Setup & Installation
-
-1. Navigate into the project folder:
-   ```bash
-   cd kmdb
-   ```
-
-2. Run the application:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-
-3. The API starts at:
-   ```
-   http://localhost:8080
-   ```
-
-4. **Database & Sample Data**  
-   - Uses **SQLite** (`movies.db`).  
-   - Sample data (5+ genres, 20+ movies, 15+ actors) is automatically loaded.  
-   - You don’t need to do anything extra.  
-   - To reset the database, simply delete the file and restart:
-     ```bash
-     rm movies.db
-     ./mvnw spring-boot:run
-     ```
-
-5. **Testing Tool: Postman**  
-
-   - Postman is the easiest way to run and test all endpoints.  
-   - Free, works in browser or desktop app.  
-   - Tutorial for beginners → [Postman API Testing Tutorial](https://community.postman.com/t/postman-api-testing-tutorial-for-beginner/64511)      
-
-    - On Collections, click "Import" button.
-    - Drag and drop the collection and environment files from the`postman/` folder. 
-    - Click on `Collections/Movie Database API`.
-    - On the top-right-corner select the environment `movies-api`.
-    - Hover on the `Collections/Movie Database API`, click on the 3 dots and press`Run`.
-    - Select `Run manually` and click `Run Movie Database API`.
-       
-      → If everything went well, you will see the 39 tests with "PASS" results.
----
-
-## 📚 Usage Guide
-
-### Base URL
-```
-http://localhost:8080/api
-```
-
-### How to use the endpoints
-- `POST` → Create a new record (send JSON body).  
-- `GET` → Retrieve records (all or filtered).  
-- `PATCH` → Update part of a record.  
-- `DELETE` → Remove a record (`?force=true` to override relationships).  
-
-👉 Examples:  
-- `GET /api/movies` → all movies  
-- `GET /api/movies?genre=2` → movies in genre 2  
-- `GET /api/movies/search?title=matrix` → search movies by title  
-- `PATCH /api/actors/3` → update actor with id 3  
-
-### Testing with Postman
-1. Open the Postman collection.  
-2. **Run all tests at once** → click **Run Collection**. Example: runs CRUD, filtering, search, pagination tests automatically.  
-3. **Try individual endpoints** → select one and press the **▶ Send** button. Example: send `GET /api/movies?year=2010`.  
-4. **Play with parameters**:  
-   - `GET /api/movies?year=2010` → movies released in 2010  
-   - `GET /api/movies?genre=1` → movies in genre 1  
-   - `GET /api/movies?actor=5` → movies of actor 5  
-   - `GET /api/actors?name=tom` → actors with name “Tom”  
-
-### Testing with Curl (Alternative to Postman)
-A ready-made script runs all tests automatically:
-
+Run the following command in the project root:
 ```bash
-sh scripts/curl-smoke-tests.sh
-```
-
-This script will:
-- Create sample genres, actors, and movies.
-- Verify CRUD, filtering, search, pagination.
-- Check error handling and validations.
-- Print ✅ PASS or ❌ FAIL results for each test (T01, T02, …).
-
-- Save the results into:
-  ```
-  scripts/curl-test-report.txt
-  ```
-
-👉 If you want to reset the DB before running again:
-```bash
-rm movies.db
 ./mvnw spring-boot:run
 ```
+Once started, the API will be available at:
+```
+http://localhost:8080
+```
+
+### 3. Database 
+The app automatically creates a file `movies.db` in your project root on first run.
+
+It seeds the database with 5 genres, 20 movies, and 15 actors.
+
+
+## 🚀 Usage Guide
+
+### 1. Entities Overview
+| Entity | Fields | Example |
+|--------|---------|----------|
+| **Genre** | `id`, `name` | Action |
+| **Movie** | `id`, `title`, `releaseYear`, `duration` | Inception (2010, 148) |
+| **Actor** | `id`, `name`, `birthDate` | Leonardo DiCaprio (1974-11-11) |
+
+Relationships:
+- A movie can belong to multiple genres and feature multiple actors.
+- An actor can star in many movies.
+
+### 2. API Endpoints
+
+| Method | Endpoint | Description |
+|--------|-----------|-------------|
+| **POST** | `/api/movies` | Create a new movie |
+| **GET** | `/api/movies` | List all movies (supports `?genre=`, `?year=`, `?actor=`, `?page=`, `?size=`) |
+| **GET** | `/api/movies/{id}` | Get movie by ID |
+| **PATCH** | `/api/movies/{id}` | Update movie fields (partial) |
+| **DELETE** | `/api/movies/{id}?force=true` | Delete movie, optionally force-remove relationships |
+| **GET** | `/api/movies/{movieId}/actors` | List all actors in a movie |
+| **GET** | `/api/movies/search?title=` | Search movies by partial title |
+| **GET** | `/api/movies?actor={Actor.id}` | Retrieve all movies the actor has starred in |
+| **GET** | `/api/genres` | Retrieve all genres |
+| **POST** | `/api/genres` | Create a new genre |
+| **GET** | `/api/genres/{id}` | Retrieve a genre by ID |
+| **PATCH** | `/api/genres/{id}` | Update an existing genre’s name |
+| **DELETE** | `/api/genres/{id}?force=true` | Delete a genre (with optional force removal) |
+| **GET** | `/api/genres/{id}/movies` | Retrieve all movies belonging to a genre |
+| **GET** | `/api/actors` | Retrieve all actors |
+| **POST** | `/api/actors` | Create a new actor |
+| **GET** | `/api/actors/{id}` | Retrieve an actor by ID |
+| **PATCH** | `/api/actors/{id}` | Update actor information |
+| **DELETE** | `/api/actors/{id}?force=true` | Delete an actor (with optional force removal) |
+| **GET** | `/api/actors?name=` | Filter actors by (case-insensitive) name |
+
+
+### 3. Testing the API
+
+You can test the API in three ways — **Postman**, **Curl**, or **Swagger**.
+
+#### 🧪 3.1 Testing with Postman
+Postman files are located in the `/postman` folder:
+- `Movie Database API.postman_collection.json` — main collection
+- `movies-api.postman_environment.json` — environment setup
+
+To use:
+1. Install the [Postman Desk App](https://www.postman.com/downloads/)
+2. Import both files
+3. Run the entire collection at once (39 tests)
+4. Or explore requests individually  
+   - Each folder corresponds to an entity: *Movies*, *Genres*, *Actors*.
+   - Each request includes pre-filled JSON bodies and response examples for easy validation.
+
+    For additional reference → [Postman API Testing Tutorial](https://community.postman.com/t/postman-api-testing-tutorial-for-beginner/64511) 
+
+
+#### 💻 3.2 Testing with Curl (command-line)
+A ready-to-use script is located at `/scripts/curl-smoke-tests.sh`.
+
+New file with the test results will be created at `/scripts/curl-test-report.txt`.
+
+Run all tests at once:
+```bash
+bash scripts/curl-smoke-tests.sh
+```
+Each section of the script corresponds to one of the required tests.  
+It automatically performs CRUD operations and prints formatted responses.
+
+#### 🌐 3.3 Testing with Swagger UI (bonus)
+Swagger provides an interactive API explorer.
+
+Once the app is running, open your browser at:
+```
+http://localhost:8080/swagger-ui/index.html
+```
+You can send live API requests directly from this interface — no external tools needed.
+
+#### 🧭 3.4 Testing Individual Endpoints
+A detailed guide for individual endpoint tests is available at:
+```
+/docs/INDIVIDUAL_TESTS.md
+```
+It explains how to validate each test request with **Postman** / **Curl** / **Swagger**.
 
 ---
 
-## ➕ Additional Features (with examples)
-
-### Extra Requirements
-- **Pagination**  
-  `GET /api/movies?page=0&size=10` → returns first 10 movies.  
-- **Basic Search**  
-  `GET /api/movies/search?title=matrix` → finds *The Matrix* and other matching movies.  
-- **Error Handling**  
-  `GET /api/actors/999` → returns `404 Not Found` with `{ "error": "Actor not found" }`.  
-- **Partial Search**  
-  `GET /api/actors?name=ste` → finds *Meryl Streep*, *Steve Carell*, etc.  
-
-### Bonus: Swagger 📝
-- **What is it?** → Swagger generates interactive API docs.  
-- **Why is it helpful?** → Lets you try endpoints directly in your browser without Postman.  
-- **How to use it?**  
-  1. Start the app.  
-  2. Go to:
-     ```
-     http://localhost:8080/swagger-ui.html
-     ```  
-  3. Example:  
-     - Expand **GET /api/movies**.  
-     - Click **“Try it out”** → then **Execute**.  
-     - The list of movies will appear directly in the browser.
+Thanks for reviewing the Movie Database API! 🍿
