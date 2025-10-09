@@ -6,12 +6,11 @@ The **Movie Database API** is a RESTful application built with **Spring Boot** a
 It provides endpoints to manage **movies**, **genres**, and **actors**, allowing easy creation, update, search, and deletion of entries while handling relationships between them.
 
 ### 💻 Technologies Used
-- **Spring Boot** – framework for rapid backend development  
-- **Spring Data JPA** – ORM layer to simplify database operations  
-- **SQLite** – lightweight embedded database    
-- **Postman** – API testing and validation tools  
-- **Curl** – API testing and validation tools  (additional)
-- **Swagger** – visual documentation and live API testing (bonus) 
+- [**Spring Boot**](https://spring.io/projects/spring-boot) – Open-source Java framework for rapid backend development with great support for REST APIs  
+- [**Spring Data JPA**](https://spring.io/projects/spring-data-jpa) – Object-Relational Mapping ORM layer to simplify database operations  
+- [**SQLite**](https://sqlite.org/) – lightweight embedded database    
+- [**Postman**](https://postman.com) – API testing and validation tools  
+- [**Swagger**](https://swagger.io/) – visual documentation and live API testing (bonus) 
 
 ## 🧩 Features and Bonus Functionality
 
