@@ -54,18 +54,19 @@ public class GenreService {
         return genreRepository.findAll();
     }
 
+    @SuppressWarnings("null")
     @Transactional(readOnly = true)
     public Page<Genre> findAll(Pageable pageable) {
         return genreRepository.findAll(pageable); 
     }
 
     @Transactional(readOnly = true)
-    public Optional<Genre> findbyId(Long id) { // Return Optional instead of null if not found
+    public Optional<Genre> findbyId(long id) { // Return Optional instead of null if not found
         return genreRepository.findById(id);
     }
 
     @Transactional
-    public Optional<Genre> updateName(Long id, String newName) {
+    public Optional<Genre> updateName(long id, String newName) {
         return genreRepository.findById(id).map(genre -> {
 
             // Bonus: Ensures creating genre duplicates will not be allowed
@@ -83,13 +84,13 @@ public class GenreService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(long id) {
         genreRepository.deleteById(id);
     }
 
     // Force delete
     @Transactional
-    public void delete(Long id, boolean force) {
+    public void delete(long id, boolean force) {
         Genre genre = genreRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Genre " + id + " not found"));
 
@@ -110,7 +111,7 @@ public class GenreService {
     }
 
     @Transactional(readOnly = true)
-    public List<Movie> findMoviesByGenre(Long genreId) {
+    public List<Movie> findMoviesByGenre(long genreId) {
         return genreRepository.findById(genreId)
         .map(genre -> genre.getMovies().stream().toList())
         .orElse(List.of()); // Empty list if genre not found

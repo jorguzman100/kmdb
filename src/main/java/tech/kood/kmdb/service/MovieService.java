@@ -28,19 +28,20 @@ public class MovieService {
 
     // WRITE
 
+    @SuppressWarnings("null")
     @Transactional
     public Movie create(Movie movie) {
         return movieRepository.save(movie);
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(long id) {
         movieRepository.deleteById(id);
     }
 
     // Force delete
     @Transactional
-    public void delete(Long id, boolean force) {
+    public void delete(long id, boolean force) {
         Movie movie = movieRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Movie " + id + " not found"));
 
@@ -62,8 +63,9 @@ public class MovieService {
         movieRepository.delete(movie);
     }
 
+    @SuppressWarnings("null")
     @Transactional
-    public Optional<Movie> update(Long id, Movie updatemovie) {
+    public Optional<Movie> update(long id, Movie updatemovie) {
         return movieRepository.findById(id)
         .map(movie -> {
             if (updatemovie.getTitle() != null && !updatemovie.getTitle().isBlank()) {
@@ -85,8 +87,9 @@ public class MovieService {
         });
     }
 
+    @SuppressWarnings("null")
     @Transactional
-    public Optional<Movie> update(Long id, MoviePatchDTO patch) {
+    public Optional<Movie> update(long id, MoviePatchDTO patch) {
         return movieRepository.findById(id)
         .map(movie -> {
             if (patch.getTitle() != null) {
@@ -110,7 +113,7 @@ public class MovieService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Movie> findbyId(Long id) { 
+    public Optional<Movie> findbyId(long id) { 
         return movieRepository.findById(id);
     }
 
@@ -125,12 +128,12 @@ public class MovieService {
     }
 
     @Transactional(readOnly = true)
-    public List<Movie> findByActor(Long actorId) {
+    public List<Movie> findByActor(long actorId) {
         return movieRepository.findByActors_Id(actorId);
     }
    
     @Transactional(readOnly = true)
-    public List<Actor> getActorsForMovie(Long movieId) {
+    public List<Actor> getActorsForMovie(long movieId) {
         return movieRepository.findById(movieId)
                 .map(movie -> movie.getActors().stream().toList())
                 .orElse(List.of()); 
@@ -138,6 +141,7 @@ public class MovieService {
 
     // READ - PAGED
 
+    @SuppressWarnings("null")
     @Transactional(readOnly = true)
     public Page<Movie> findAll(Pageable pageable) {
         return movieRepository.findAll(pageable); // JpaRepository already provides findAll(Pageable) -> No need to declare in repo

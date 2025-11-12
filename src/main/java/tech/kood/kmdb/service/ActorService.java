@@ -14,6 +14,10 @@ import tech.kood.kmdb.model.Movie;
 import tech.kood.kmdb.repository.ActorRepository;
 import tech.kood.kmdb.repository.MovieRepository;
 
+import java.util.Objects;
+import jakarta.validation.constraints.NotNull;
+
+
 // Business logic: CRUD and handle relationships
 // Extra: Pagination
 @Service
@@ -30,9 +34,10 @@ public class ActorService {
 
     // CRUD
 
+    @SuppressWarnings("null")
     @Transactional
     public Actor create(Actor actor) {
-        return actorRepository.save(actor);
+        return Objects.requireNonNull(actorRepository.save(actor));
     }
 
     @Transactional(readOnly = true)
@@ -40,24 +45,25 @@ public class ActorService {
         return actorRepository.findAll();
     }
 
+    @SuppressWarnings("null")
     @Transactional(readOnly = true)
-    public Page<Actor> findAll(Pageable pageable) {
+    public Page<Actor> findAll(@NotNull Pageable pageable) {
         return actorRepository.findAll(pageable); 
     }
 
     @Transactional(readOnly = true)
-    public Optional<Actor> findbyId(Long id) { // Return Optional instead of null if not found
+    public Optional<Actor> findbyId(long id) { // Return Optional instead of null if not found
         return actorRepository.findById(id);
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(long id) {
         actorRepository.deleteById(id);
     }
 
     // Force delete
     @Transactional
-    public void delete(Long id, boolean force) {
+    public void delete(long id, boolean force) {
         Actor actor = actorRepository.findById(id)
         .orElseThrow(() -> new ResourceNotFoundException("Actor " + id + " not found"));
 
@@ -88,14 +94,15 @@ public class ActorService {
     }
 
     @Transactional(readOnly = true)
-    public List<Movie> getMoviesForActor(Long actorId) {
+    public List<Movie> getMoviesForActor(long actorId) {
         return actorRepository.findById(actorId)
                 .map(actor -> actor.getMovies().stream().toList())
                 .orElse(List.of()); // Empty if actor not found
     }
 
+    @SuppressWarnings("null")
     @Transactional
-    public Optional<Actor> update(Long id, Actor updatedActor) {
+    public Optional<Actor> update(long id, Actor updatedActor) {
         return actorRepository.findById(id)
         .map(actor -> {
             // Update only if non-null
@@ -108,7 +115,7 @@ public class ActorService {
             if (updatedActor.getMovies() != null) {
                 actor.setMovies(updatedActor.getMovies());
             }
-            return actorRepository.save(actor);
+            return Objects.requireNonNull(actorRepository.save(actor));
         });
     }
 }

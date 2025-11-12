@@ -1,6 +1,7 @@
 package tech.kood.kmdb.controller;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -70,7 +71,7 @@ public class ActorController {
     @GetMapping("/{id}") // 200 or 404
     public ResponseEntity<Actor> findOne(@PathVariable Long id) {
         Optional<Actor> a = actorService.findbyId(id);
-        return ResponseEntity.of(a);
+        return ResponseEntity.of(Objects.requireNonNull(a));
     }
 
     @PatchMapping("/{id}") // 200 + updated entity
