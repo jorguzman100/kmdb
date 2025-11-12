@@ -41,3 +41,4 @@ build/
 sequence.puml
 info.sh
 info.txt
+curl-test-report.txt

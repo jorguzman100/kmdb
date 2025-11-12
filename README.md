@@ -144,4 +144,4 @@ It explains how to validate each test request with **Postman** / **Curl** / **Sw
 
 ---
 
-Thanks for reviewing the Movie Database API! 🍿
+Thanks for reviewing this Movie Database API! 🍿
